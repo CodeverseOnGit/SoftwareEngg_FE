@@ -1,65 +1,95 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+
+export default function LandingPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-zinc-950 to-zinc-900 text-zinc-100">
+      {/* HERO */}
+      <section className="max-w-6xl mx-auto px-6 py-32 text-center">
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-5xl md:text-6xl font-bold tracking-tight"
+        >
+          Learn Software Development<br />Like a Game
+        </motion.h1>
+        <p className="mt-6 text-lg text-zinc-400 max-w-2xl mx-auto">
+          From zero to real-world systems — with XP, levels, quizzes, and boss fights.
+          Built for absolute beginners and CS students.
+        </p>
+        <div className="mt-10 flex justify-center">
+          <Button size="lg" className="rounded-2xl px-8 py-6 text-lg">
+            ▶ Start Free
+          </Button>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* XP BAR */}
+        <div className="mt-16 max-w-md mx-auto">
+          <div className="text-sm text-zinc-400 mb-2">Level 1 — 120 / 500 XP</div>
+          <div className="w-full h-3 bg-zinc-800 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: "24%" }}
+              transition={{ duration: 1 }}
+              className="h-full bg-emerald-500"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
         </div>
-      </main>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="max-w-6xl mx-auto px-6 py-24 grid gap-6 md:grid-cols-4">
+        {["Learn", "Understand", "Quiz", "Level Up"].map((step, i) => (
+          <Card key={i} className="bg-zinc-900 border-zinc-800 rounded-2xl">
+            <CardContent className="p-6 text-center">
+              <div className="text-3xl mb-4">{i === 0 ? "📘" : i === 1 ? "🧠" : i === 2 ? "❓" : "⭐"}</div>
+              <h3 className="font-semibold text-lg mb-2">{step}</h3>
+              <p className="text-sm text-zinc-400">
+                {i === 0 && "Simple explanations with real examples."}
+                {i === 1 && "Build strong mental models."}
+                {i === 2 && "Answer quizzes and get instant feedback."}
+                {i === 3 && "Earn XP and unlock new challenges."}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
+
+      {/* DIFFERENT */}
+      <section className="max-w-4xl mx-auto px-6 py-24">
+        <h2 className="text-3xl font-bold text-center mb-10">Why This Is Different</h2>
+        <ul className="space-y-4 text-zinc-400 text-center">
+          <li>No framework-first nonsense</li>
+          <li>First-principles explanations</li>
+          <li>Designed like a game, not a textbook</li>
+          <li>Free core forever</li>
+        </ul>
+      </section>
+
+      {/* ROADMAP */}
+      <section className="max-w-6xl mx-auto px-6 py-24 grid gap-6 md:grid-cols-4">
+        {["Foundations", "Systems", "Architecture", "Production"].map((q, i) => (
+          <Card key={i} className="bg-zinc-900 border-zinc-800 rounded-2xl">
+            <CardContent className="p-6">
+              <h3 className="font-semibold text-lg mb-2">Quarter {i + 1}</h3>
+              <p className="text-zinc-400 text-sm">{q}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="text-center py-32">
+        <h2 className="text-4xl font-bold mb-6">Start Learning Today</h2>
+        <p className="text-zinc-400 mb-10">No pressure. No fluff. Just progress.</p>
+        <Button size="lg" className="rounded-2xl px-10 py-6 text-lg">
+          ▶ Start Free
+        </Button>
+      </section>
     </div>
   );
 }
