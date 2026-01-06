@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useXP, progressToNextLevel } from "../context/XPContext";
+import { useXP, progressToNextLevel } from "@/app/context/XPContext"; 
 
 export default function DashboardPage() {
   const { totalXP } = useXP();

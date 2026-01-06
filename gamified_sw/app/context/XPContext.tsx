@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 // ---------------- XP LOGIC ----------------
 export function xpForLevel(level: number) {
@@ -31,19 +31,35 @@ export function progressToNextLevel(totalXP: number) {
 type XPContextType = {
   totalXP: number;
   addXP: (amount: number) => void;
+  resetXP: () => void;
 };
 
 const XPContext = createContext<XPContextType | null>(null);
 
 export function XPProvider({ children }: { children: ReactNode }) {
-  const [totalXP, setTotalXP] = useState(170);
+  const [totalXP, setTotalXP] = useState(0);
+
+  // Load XP from localStorage on mount
+  useEffect(() => {
+    const savedXP = localStorage.getItem("totalXP");
+    if (savedXP) setTotalXP(Number(savedXP));
+  }, []);
+
+  // Save XP to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("totalXP", totalXP.toString());
+  }, [totalXP]);
 
   function addXP(amount: number) {
     setTotalXP((xp) => xp + amount);
   }
 
+  function resetXP() {
+    setTotalXP(0);
+  }
+
   return (
-    <XPContext.Provider value={{ totalXP, addXP }}>
+    <XPContext.Provider value={{ totalXP, addXP, resetXP }}>
       {children}
     </XPContext.Provider>
   );
