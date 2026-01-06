@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useXP } from "../context/XPContext";
+
 
 // ------------------ TYPES ------------------
 type Question = {
@@ -48,6 +50,7 @@ const QUESTIONS: Question[] = [
 
 // ------------------ CONFIG ------------------
 const XP_PER_CORRECT = 25;
+const QUIZ_BONUS = 25;
 
 export default function QuizEngine() {
   const [current, setCurrent] = useState(0);
