@@ -51,6 +51,9 @@ type XPContextType = {
   levelUp: number | null;
   setLevelUp: (lvl: number | null) => void;
 
+  currentStreak: number;
+  longestStreak: number;
+
   completeLesson: () => void;
   completeQuiz: () => void;
 
@@ -62,6 +65,11 @@ const XPContext = createContext<XPContextType | null>(null);
 
 // ---------------- PROVIDER ----------------
 export function XPProvider({ children }: { children: ReactNode }) {
+
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [longestStreak, setLongestStreak] = useState(0);
+  const [lastActiveDate, setLastActiveDate] = useState<string | null>(null);
+
   const [totalXP, setTotalXP] = useState(0);
   const [levelUp, setLevelUp] = useState<number | null>(null);
   const prevLevelRef = useRef(1);
@@ -105,7 +113,10 @@ export function XPProvider({ children }: { children: ReactNode }) {
       lessonsCompleted,
       quizzesCompleted,
       level: getLevelFromXP(totalXP),
+      currentStreak,
+      longestStreak,
     };
+
 
     achievements.forEach((a) => {
       if (!unlocked.includes(a.id) && a.condition(state)) {
@@ -115,9 +126,49 @@ export function XPProvider({ children }: { children: ReactNode }) {
     });
   }, [totalXP, lessonsCompleted, quizzesCompleted]);
 
-  function addXP(amount: number) {
-    setTotalXP((xp) => xp + amount);
+  useEffect(() => {
+  const saved = localStorage.getItem("streak");
+  if (saved) {
+    const s = JSON.parse(saved);
+    setCurrentStreak(s.currentStreak);
+    setLongestStreak(s.longestStreak);
+    setLastActiveDate(s.lastActiveDate);
   }
+  }, []);
+
+
+  useEffect(() => {
+  localStorage.setItem(
+    "streak",
+    JSON.stringify({ currentStreak, longestStreak, lastActiveDate })
+  );
+  }, [currentStreak, longestStreak, lastActiveDate]);
+
+  function updateStreak() {
+  const today = new Date().toISOString().split("T")[0];
+
+  if (lastActiveDate === today) return;
+
+  const yesterday = new Date(Date.now() - 86400000)
+    .toISOString()
+    .split("T")[0];
+
+  if (lastActiveDate === yesterday) {
+    setCurrentStreak((s) => s + 1);
+  } else {
+    setCurrentStreak(1);
+  }
+
+  setLongestStreak((l) => Math.max(l, currentStreak + 1));
+  setLastActiveDate(today);
+  }
+
+
+  function addXP(amount: number) {
+  const streakBonus = currentStreak >= 5 ? 10 : 0;
+  setTotalXP((xp) => xp + amount + streakBonus);
+}
+
 
   function resetXP() {
     setTotalXP(0);
@@ -127,24 +178,40 @@ export function XPProvider({ children }: { children: ReactNode }) {
     setLessonsCompleted((v) => v + 1);
   }
 
-  function completeQuiz() {
-    setQuizzesCompleted((v) => v + 1);
+  function breakStreak() {
+    setCurrentStreak(0);
   }
 
+  function completeQuiz() {
+    setQuizzesCompleted((v) => v + 1);
+
+    setCurrentStreak((s) => {
+      const next = s + 1;
+      setLongestStreak((l) => Math.max(l, next));
+      return next;
+    });
+  }
+
+
   return (
-    <XPContext.Provider
-      value={{
-        totalXP,
-        addXP,
-        resetXP,
-        levelUp,
-        setLevelUp,
-        completeLesson,
-        completeQuiz,
-        activeAchievement,
-        setActiveAchievement,
-      }}
-    >
+  <XPContext.Provider value={{
+    totalXP,
+    addXP,
+    resetXP,
+
+    levelUp,
+    setLevelUp,
+
+    currentStreak,
+    longestStreak,
+
+    completeLesson,
+    completeQuiz,
+
+    activeAchievement,
+    setActiveAchievement,
+  }}>
+
       {children}
     </XPContext.Provider>
   );

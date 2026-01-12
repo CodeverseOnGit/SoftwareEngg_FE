@@ -8,9 +8,12 @@ export type Achievement = {
 
 export type AchievementState = {
   totalXP: number;
+  level: number;
   lessonsCompleted: number;
   quizzesCompleted: number;
-  level: number;
+
+  currentStreak: number;
+  longestStreak: number;
 };
 
 export const achievements: Achievement[] = [
@@ -34,5 +37,12 @@ export const achievements: Achievement[] = [
     description: "Reach Level 2",
     icon: "🚀",
     condition: (s) => s.level >= 2,
+  },
+  {
+    id: "streak-7",
+    title: "Consistency",
+    description: "Maintain a 7-day learning streak",
+    icon: "🔥",
+    condition: (s) => s.currentStreak >= 7,
   },
 ];

@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { useXP, progressToNextLevel } from "@/app/context/XPContext"; 
 
 export default function DashboardPage() {
-  const { totalXP } = useXP();
+  const { totalXP, currentStreak, longestStreak } = useXP();
   const progress = progressToNextLevel(totalXP);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-950 to-zinc-900 text-zinc-100 px-6 py-20">
@@ -41,6 +42,18 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+
+        <Card className="bg-zinc-900 border-zinc-800 rounded-2xl">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div>
+              <p className="text-zinc-400 text-sm">Daily Streak</p>
+              <h3 className="text-3xl font-bold">{currentStreak} 🔥</h3>
+              <p className="text-xs text-zinc-500">Best: {longestStreak}</p>
+            </div>
+            <div className="text-4xl">🔥</div>
+          </CardContent>
+        </Card>
+
 
         {/* CURRENT FOCUS */}
         <Card className="bg-zinc-900 border-zinc-800 rounded-2xl">
