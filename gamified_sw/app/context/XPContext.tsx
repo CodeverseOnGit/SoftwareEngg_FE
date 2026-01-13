@@ -63,9 +63,20 @@ type XPContextType = {
 
 const XPContext = createContext<XPContextType | null>(null);
 
+function today() {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  function yesterday() {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return d.toISOString().split("T")[0];
+  }
+
 // ---------------- PROVIDER ----------------
 export function XPProvider({ children }: { children: ReactNode }) {
 
+  const [lastQuizDate, setLastQuizDate] = useState<string | null>(null);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [longestStreak, setLongestStreak] = useState(0);
   const [lastActiveDate, setLastActiveDate] = useState<string | null>(null);
@@ -88,7 +99,17 @@ export function XPProvider({ children }: { children: ReactNode }) {
 
     const savedAchievements = localStorage.getItem("achievements");
     if (savedAchievements) setUnlocked(JSON.parse(savedAchievements));
+
+    const savedDate = localStorage.getItem("lastQuizDate");
+    if (savedDate) setLastQuizDate(savedDate);
   }, []);
+
+  useEffect(() => {
+    if (lastQuizDate) {
+      localStorage.setItem("lastQuizDate", lastQuizDate);
+    }
+  }, [lastQuizDate]);
+
 
   // Save XP
   useEffect(() => {
@@ -134,6 +155,14 @@ export function XPProvider({ children }: { children: ReactNode }) {
     setLongestStreak(s.longestStreak);
     setLastActiveDate(s.lastActiveDate);
   }
+  }, []);
+
+  useEffect(() => {
+    if (!lastQuizDate) return;
+
+    if (lastQuizDate !== today() && lastQuizDate !== yesterday()) {
+      setCurrentStreak(0);
+    }
   }, []);
 
 
@@ -182,15 +211,26 @@ export function XPProvider({ children }: { children: ReactNode }) {
     setCurrentStreak(0);
   }
 
-  function completeQuiz() {
+function completeQuiz() {
     setQuizzesCompleted((v) => v + 1);
 
-    setCurrentStreak((s) => {
-      const next = s + 1;
-      setLongestStreak((l) => Math.max(l, next));
-      return next;
-    });
+    const todayDate = today();
+
+    if (!lastQuizDate) {
+      setCurrentStreak(1);
+    } else if (lastQuizDate === todayDate) {
+      return; // already counted today
+    } else if (lastQuizDate === yesterday()) {
+      setCurrentStreak((s) => s + 1);
+    } else {
+      setCurrentStreak(1); // missed a day
+    }
+
+    setLastQuizDate(todayDate);
+
+    setLongestStreak((l) => Math.max(l, currentStreak + 1));
   }
+
 
 
   return (
