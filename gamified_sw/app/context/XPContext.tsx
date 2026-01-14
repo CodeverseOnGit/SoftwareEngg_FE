@@ -169,6 +169,8 @@ export function XPProvider({ children }: { children: ReactNode }) {
     lessonsCompleted,
     quizzesCompleted,
     level: getLevelFromXP(totalXP),
+    currentStreak,
+    longestStreak,
   };
 
   achievements.forEach((a) => {
