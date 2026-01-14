@@ -20,11 +20,11 @@ function AchievementWatcher() {
   const { activeAchievement, setActiveAchievement } = useXP();
 
   return (
-    <AchievementModal
-      open={!!activeAchievement}
-      achievement={activeAchievement}
-      onClose={() => setActiveAchievement(null)}
-    />
+      <AchievementModal
+        open={!!activeAchievement}
+        achievement={activeAchievement}
+        onClose={() => setActiveAchievement(null)}
+      />
   );
 }
 

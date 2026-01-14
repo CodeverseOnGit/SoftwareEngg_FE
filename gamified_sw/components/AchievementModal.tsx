@@ -1,57 +1,67 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
+
+type Achievement = {
+  id: string;
+  title: string;
+  description: string;
+};
+
+type Props = {
+  open: boolean;
+  achievement: Achievement | null;
+  onClose: () => void;
+};
 
 export default function AchievementModal({
   open,
   achievement,
   onClose,
-}: {
-  open: boolean;
-  achievement: any;
-  onClose: () => void;
-}) {
+}: Props) {
+  if (!achievement) return null;
+
   return (
     <AnimatePresence>
-      {open && achievement && (
+      {open && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 40, scale: 0.95 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="fixed bottom-6 right-6 z-50 max-w-sm rounded-2xl
+                     bg-zinc-900 border border-zinc-800 shadow-xl
+                     px-6 py-5 pointer-events-none"
         >
+          {/* Glow */}
           <motion.div
-            className="bg-zinc-900 border border-zinc-800 rounded-3xl p-10 w-full max-w-md text-center space-y-6 shadow-2xl"
-            initial={{ scale: 0.7, y: 40, rotate: -5 }}
-            animate={{ scale: 1, y: 0, rotate: 0 }}
-            exit={{ scale: 0.7, y: 40, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 260, damping: 18 }}
-          >
+            className="absolute inset-0 rounded-2xl bg-emerald-400/10 blur-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+          />
+
+          <div className="relative flex gap-4 items-start">
+            {/* Badge */}
             <motion.div
-              className="text-6xl"
               initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring" }}
+              animate={{ scale: [0, 1.2, 1] }}
+              transition={{ duration: 0.6 }}
+              className="text-4xl"
             >
-              {achievement.icon}
+              🏆
             </motion.div>
 
-            <h2 className="text-3xl font-bold text-emerald-400">
-              Achievement Unlocked!
-            </h2>
-
-            <p className="text-xl font-semibold">{achievement.title}</p>
-            <p className="text-zinc-400">{achievement.description}</p>
-
-            <Button
-              onClick={onClose}
-              size="lg"
-              className="rounded-2xl mt-4"
-            >
-              Continue
-            </Button>
-          </motion.div>
+            <div>
+              <p className="text-xs text-emerald-400 font-semibold">
+                Achievement Unlocked
+              </p>
+              <h3 className="text-lg font-bold">{achievement.title}</h3>
+              <p className="text-sm text-zinc-400">
+                {achievement.description}
+              </p>
+            </div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

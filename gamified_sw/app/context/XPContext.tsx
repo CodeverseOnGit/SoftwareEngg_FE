@@ -172,6 +172,12 @@ export function XPProvider({ children }: { children: ReactNode }) {
   }
   }, []);
 
+  useEffect(() => {
+    if (!activeAchievement) return;
+    const t = setTimeout(() => setActiveAchievement(null), 2500);
+    return () => clearTimeout(t);
+  }, [activeAchievement]);
+
 useEffect(() => {
     if (!lastQuizDate) return;
 
