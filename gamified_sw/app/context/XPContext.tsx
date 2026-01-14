@@ -9,6 +9,7 @@ import {
   ReactNode,
 } from "react";
 import { achievements } from "../data/achievements";
+import { RARITY_XP } from "../data/achievementRarity";
 
 // ---------------- XP LOGIC ----------------
 export function xpForLevel(level: number) {
@@ -161,6 +162,24 @@ export function XPProvider({ children }: { children: ReactNode }) {
       }
     });
   }, [totalXP, lessonsCompleted, quizzesCompleted]);
+
+  useEffect(() => {
+  const state = {
+    totalXP,
+    lessonsCompleted,
+    quizzesCompleted,
+    level: getLevelFromXP(totalXP),
+  };
+
+  achievements.forEach((a) => {
+    if (!unlocked.includes(a.id) && a.condition(state)) {
+      setUnlocked((u) => [...u, a.id]);
+      setActiveAchievement(a);
+      addXP(RARITY_XP[a.rarity]); // ⭐ reward by rarity
+    }
+  });
+}, [totalXP, lessonsCompleted, quizzesCompleted]);
+
 
   useEffect(() => {
   const saved = localStorage.getItem("streak");

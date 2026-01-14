@@ -1,22 +1,22 @@
 export type XPContextActions = {
   setStreakFreeze: React.Dispatch<React.SetStateAction<number>>;
 };
-
+export type AchievementRarity = "bronze" | "silver" | "gold";
 export type Achievement = {
   id: string;
   title: string;
   description: string;
   icon: string;
+  rarity: AchievementRarity;
   condition: (state: AchievementState) => boolean;
   reward?: (ctx: XPContextActions) => void;
 };
 
 export type AchievementState = {
   totalXP: number;
-  level: number;
   lessonsCompleted: number;
   quizzesCompleted: number;
-
+  level: number;
   currentStreak: number;
   longestStreak: number;
 };
@@ -27,6 +27,7 @@ export const achievements: Achievement[] = [
     title: "First Steps",
     description: "Earn your first XP",
     icon: "👣",
+    rarity: "bronze",
     condition: (s) => s.totalXP > 0,
   },
   {
@@ -34,6 +35,7 @@ export const achievements: Achievement[] = [
     title: "Quiz Crusher",
     description: "Complete your first quiz",
     icon: "🧠",
+      rarity: "bronze",
     condition: (s) => s.quizzesCompleted >= 1,
   },
   {
@@ -41,6 +43,7 @@ export const achievements: Achievement[] = [
     title: "Level Up!",
     description: "Reach Level 2",
     icon: "🚀",
+    rarity: "bronze",
     condition: (s) => s.level >= 2,
   },
   {
@@ -48,6 +51,7 @@ export const achievements: Achievement[] = [
     title: "Consistency",
     description: "Maintain a 7-day learning streak",
     icon: "🔥",
+    rarity: "bronze",
     condition: (s) => s.currentStreak >= 7,
   },
   {
@@ -56,6 +60,31 @@ export const achievements: Achievement[] = [
     description: "Reach a 10-day streak",
     condition: (s) => s.longestStreak >= 10,
     icon: "❄️",
+    rarity: "silver",
     reward: (ctx) => ctx.setStreakFreeze((f) => f + 1),
-  }
+  },
+  {
+    id: "first_lesson",
+    title: "First Steps",
+    description: "Complete your first lesson",
+    rarity: "bronze",
+    icon: "📘",
+    condition: (s) => s.lessonsCompleted >= 1,
+  },
+  {
+    id: "quiz_master",
+    title: "Quiz Master",
+    description: "Complete 10 quizzes",
+    rarity: "silver",
+    icon: "🧠",
+    condition: (s) => s.quizzesCompleted >= 10,
+  },
+  {
+    id: "unstoppable",
+    title: "Unstoppable",
+    description: "Reach Level 10",
+    rarity: "gold",
+    icon: "🏆",
+    condition: (s) => s.level >= 10,
+  },
 ];

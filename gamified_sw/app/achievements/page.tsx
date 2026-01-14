@@ -1,8 +1,8 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { achievements } from "@/app/data/achievements";
+import AchievementCard from "@/components/AchievementCard";
 
 export default function AchievementGalleryPage() {
   const unlockedIds = JSON.parse(
@@ -34,24 +34,10 @@ export default function AchievementGalleryPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
               >
-                <Card
-                  className={`rounded-2xl border-zinc-800 bg-zinc-900 p-6 text-center space-y-4 transition-all ${
-                    unlocked
-                      ? "shadow-lg shadow-emerald-500/20"
-                      : "opacity-40"
-                  }`}
-                >
-                  <CardContent className="space-y-3">
-                    <div className="text-5xl">{a.icon}</div>
-                    <h3 className="text-xl font-semibold">{a.title}</h3>
-                    <p className="text-sm text-zinc-400">
-                      {unlocked ? a.description : "Locked"}
-                    </p>
-                    {!unlocked && (
-                      <p className="text-xs text-zinc-500">Keep learning!</p>
-                    )}
-                  </CardContent>
-                </Card>
+                <AchievementCard
+                achievement={a}
+                unlocked={unlocked}
+              />
               </motion.div>
             );
           })}
