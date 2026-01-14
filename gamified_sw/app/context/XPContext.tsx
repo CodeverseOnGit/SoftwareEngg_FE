@@ -61,6 +61,7 @@ type XPContextType = {
   setActiveAchievement: (a: Achievement | null) => void;
 
   streakFreeze: number;
+  buyStreakFreeze: () => boolean;
 };
 
 const XPContext = createContext<XPContextType | null>(null);
@@ -225,8 +226,19 @@ useEffect(() => {
 
 
   function addXP(amount: number) {
-  const streakBonus = currentStreak >= 5 ? 10 : 0;
-  setTotalXP((xp) => xp + amount + streakBonus);
+    const streakBonus = currentStreak >= 5 ? 10 : 0;
+    setTotalXP((xp) => xp + amount + streakBonus);
+  }
+
+const STREAK_FREEZE_COST = 200;
+if (streakFreeze >= 5) return false;
+
+function buyStreakFreeze() {
+  if (totalXP < STREAK_FREEZE_COST) return false;
+
+  setTotalXP((xp) => xp - STREAK_FREEZE_COST);
+  setStreakFreeze((f) => f + 1);
+  return true;
 }
 
 
@@ -284,6 +296,8 @@ function completeQuiz() {
     setActiveAchievement,
 
     streakFreeze,
+
+    buyStreakFreeze,
   }}>
 
       {children}

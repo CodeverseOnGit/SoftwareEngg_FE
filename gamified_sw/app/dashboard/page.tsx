@@ -4,12 +4,17 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useXP, progressToNextLevel } from "@/app/context/XPContext"; 
+import { useState } from "react";
 
 export default function DashboardPage() {
-  const { totalXP, currentStreak, longestStreak, streakFreeze } = useXP();
+  const { totalXP, currentStreak, longestStreak, streakFreeze, buyStreakFreeze } = useXP();
   const progress = progressToNextLevel(totalXP);
+  const [purchaseMsg, setPurchaseMsg] = useState("");
 
-
+  function handleBuy() {
+    const ok = buyStreakFreeze();
+    setPurchaseMsg(ok ? "❄️ Freeze purchased!" : "Not enough XP");
+  }
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-950 to-zinc-900 text-zinc-100 px-6 py-20">
       <div className="max-w-6xl mx-auto space-y-16">
@@ -50,8 +55,15 @@ export default function DashboardPage() {
               <h3 className="text-3xl font-bold">{currentStreak} 🔥</h3>
               <p className="text-xs text-zinc-500">Best: {longestStreak}</p>
               <p>❄️ Streak Freeze Available: {streakFreeze}</p>
+              <Button
+                onClick={buyStreakFreeze}
+                disabled={streakFreeze >= 5}
+                className="rounded-xl mt-3"
+              >
+                Buy Streak Freeze (200 XP)
+              </Button>
             </div>
-            <div className="text-4xl">🔥</div>
+            <div className="text-4xl"></div>
           </CardContent>
         </Card>
 
