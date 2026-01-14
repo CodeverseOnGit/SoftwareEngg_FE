@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useXP, progressToNextLevel } from "@/app/context/XPContext"; 
 
 export default function DashboardPage() {
-  const { totalXP, currentStreak, longestStreak } = useXP();
+  const { totalXP, currentStreak, longestStreak, streakFreeze } = useXP();
   const progress = progressToNextLevel(totalXP);
 
 
@@ -49,6 +49,7 @@ export default function DashboardPage() {
               <p className="text-zinc-400 text-sm">Daily Streak</p>
               <h3 className="text-3xl font-bold">{currentStreak} 🔥</h3>
               <p className="text-xs text-zinc-500">Best: {longestStreak}</p>
+              <p>❄️ Streak Freeze Available: {streakFreeze}</p>
             </div>
             <div className="text-4xl">🔥</div>
           </CardContent>

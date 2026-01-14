@@ -1,9 +1,14 @@
+export type XPContextActions = {
+  setStreakFreeze: React.Dispatch<React.SetStateAction<number>>;
+};
+
 export type Achievement = {
   id: string;
   title: string;
   description: string;
   icon: string;
   condition: (state: AchievementState) => boolean;
+  reward?: (ctx: XPContextActions) => void;
 };
 
 export type AchievementState = {
@@ -45,4 +50,12 @@ export const achievements: Achievement[] = [
     icon: "🔥",
     condition: (s) => s.currentStreak >= 7,
   },
+  {
+    id: "streak-10",
+    title: "Unbreakable",
+    description: "Reach a 10-day streak",
+    condition: (s) => s.longestStreak >= 10,
+    icon: "❄️",
+    reward: (ctx) => ctx.setStreakFreeze((f) => f + 1),
+  }
 ];

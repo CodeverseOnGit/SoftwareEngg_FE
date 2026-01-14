@@ -59,6 +59,8 @@ type XPContextType = {
 
   activeAchievement: Achievement | null;
   setActiveAchievement: (a: Achievement | null) => void;
+
+  streakFreeze: number;
 };
 
 const XPContext = createContext<XPContextType | null>(null);
@@ -76,6 +78,8 @@ function today() {
 // ---------------- PROVIDER ----------------
 export function XPProvider({ children }: { children: ReactNode }) {
 
+  const freezeUsedRef = useRef(false);
+  const [streakFreeze, setStreakFreeze] = useState(1);
   const [lastQuizDate, setLastQuizDate] = useState<string | null>(null);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [longestStreak, setLongestStreak] = useState(0);
@@ -102,7 +106,16 @@ export function XPProvider({ children }: { children: ReactNode }) {
 
     const savedDate = localStorage.getItem("lastQuizDate");
     if (savedDate) setLastQuizDate(savedDate);
+
+    const savedFreeze = localStorage.getItem("streakFreeze");
+  if (savedFreeze) setStreakFreeze(Number(savedFreeze));
+
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("streakFreeze", streakFreeze.toString());
+  }, [streakFreeze]);
+
 
   useEffect(() => {
     if (lastQuizDate) {
@@ -143,6 +156,7 @@ export function XPProvider({ children }: { children: ReactNode }) {
       if (!unlocked.includes(a.id) && a.condition(state)) {
         setUnlocked((u) => [...u, a.id]);
         setActiveAchievement(a);
+        a.reward?.({ setStreakFreeze });
       }
     });
   }, [totalXP, lessonsCompleted, quizzesCompleted]);
@@ -157,10 +171,27 @@ export function XPProvider({ children }: { children: ReactNode }) {
   }
   }, []);
 
-  useEffect(() => {
+useEffect(() => {
     if (!lastQuizDate) return;
 
-    if (lastQuizDate !== today() && lastQuizDate !== yesterday()) {
+    if (lastQuizDate === today() || lastQuizDate === yesterday()) return;
+
+    if (streakFreeze > 0) {
+      setStreakFreeze((f) => f - 1);
+    } else {
+      setCurrentStreak(0);
+    }
+  }, []);
+
+useEffect(() => {
+    if (!lastQuizDate || freezeUsedRef.current) return;
+
+    if (lastQuizDate === today() || lastQuizDate === yesterday()) return;
+
+    if (streakFreeze > 0) {
+      setStreakFreeze((f) => f - 1);
+      freezeUsedRef.current = true;
+    } else {
       setCurrentStreak(0);
     }
   }, []);
@@ -212,6 +243,7 @@ export function XPProvider({ children }: { children: ReactNode }) {
   }
 
 function completeQuiz() {
+    freezeUsedRef.current = false;
     setQuizzesCompleted((v) => v + 1);
 
     const todayDate = today();
@@ -250,6 +282,8 @@ function completeQuiz() {
 
     activeAchievement,
     setActiveAchievement,
+
+    streakFreeze,
   }}>
 
       {children}
