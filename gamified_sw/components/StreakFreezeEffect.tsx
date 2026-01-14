@@ -22,9 +22,14 @@ export default function StreakFreezeEffect({ show, onDone }: Props) {
       {show && (
         <motion.div
           className="fixed inset-0 z-50 pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, x: 0, y: 0 }}
+          animate={{
+            opacity: 1,
+            x: [0, -6, 6, -4, 4, 0],
+            y: [0, 4, -4, 3, -3, 0],
+          }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
         >
           {/* Frost Overlay */}
           <motion.div
