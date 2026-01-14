@@ -5,11 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useXP, progressToNextLevel } from "@/app/context/XPContext"; 
 import { useState } from "react";
+import StreakFreezeEffect from "@/components/StreakFreezeEffect";
 
 export default function DashboardPage() {
   const { totalXP, currentStreak, longestStreak, streakFreeze, buyStreakFreeze } = useXP();
   const progress = progressToNextLevel(totalXP);
   const [purchaseMsg, setPurchaseMsg] = useState("");
+  const [showFreezeEffect, setShowFreezeEffect] = useState(false);
 
   function handleBuy() {
     const ok = buyStreakFreeze();
@@ -56,7 +58,10 @@ export default function DashboardPage() {
               <p className="text-xs text-zinc-500">Best: {longestStreak}</p>
               <p>❄️ Streak Freeze Available: {streakFreeze}</p>
               <Button
-                onClick={buyStreakFreeze}
+                onClick={() => {
+                  const ok = buyStreakFreeze();
+                  if (ok) setShowFreezeEffect(true);
+                }}
                 disabled={streakFreeze >= 5}
                 className="rounded-xl mt-3"
               >
@@ -114,6 +119,10 @@ export default function DashboardPage() {
             ))}
           </div>
         </section>
+        <StreakFreezeEffect
+          show={showFreezeEffect}
+          onDone={() => setShowFreezeEffect(false)}
+        />
       </div>
     </div>
   );
