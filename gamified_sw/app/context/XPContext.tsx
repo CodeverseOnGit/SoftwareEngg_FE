@@ -213,16 +213,47 @@ export function XPProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(t);
   }, [activeAchievement]);
 
-  // ---------------- ACTIONS ----------------
-  function completeLesson() {
-    setLessonsCompleted((v) => v + 1);
-    updateDailyStreak();
-  }
+async function completeLesson() {
+  const xp = 50; // or pass dynamically per lesson
 
-  function completeQuiz() {
-    setQuizzesCompleted((v) => v + 1);
-    updateDailyStreak();
-  }
+  const res = await fetch("http://localhost:8080/api/progress/lesson", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId: 1, // TEMP — replace with auth later
+      xp,
+    }),
+  });
+
+  const updatedUser = await res.json();
+
+  // 🔁 Sync frontend state from backend
+  setTotalXP(updatedUser.totalXP);
+  setCurrentStreak(updatedUser.currentStreak);
+  setLongestStreak(updatedUser.longestStreak);
+}
+
+async function completeQuiz() {
+  const xp = 100;
+
+  const res = await fetch("http://localhost:8080/api/progress/quiz", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: 1,
+      xp,
+    }),
+  });
+
+  const updatedUser = await res.json();
+
+  setTotalXP(updatedUser.totalXP);
+  setCurrentStreak(updatedUser.currentStreak);
+  setLongestStreak(updatedUser.longestStreak);
+}
+
 
   function resetXP() {
     setTotalXP(0);
