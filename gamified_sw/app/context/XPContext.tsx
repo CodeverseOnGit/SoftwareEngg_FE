@@ -70,7 +70,7 @@ type XPContextType = {
   currentStreak: number;
   longestStreak: number;
 
-  completeLesson: () => void;
+  completeLesson: (lessonId: number) => Promise<void>;
   completeQuiz: () => void;
 
   activeAchievement: Achievement | null;
@@ -213,27 +213,23 @@ export function XPProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(t);
   }, [activeAchievement]);
 
-async function completeLesson() {
-  const xp = 50; // or pass dynamically per lesson
-
+async function completeLesson(lessonId: number) {
   const res = await fetch("http://localhost:8080/api/progress/lesson", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      userId: 1, // TEMP — replace with auth later
-      xp,
+      userId: 1,        // TEMP
+      lessonId: lessonId,
     }),
   });
 
-  const updatedUser = await res.json();
+  const user = await res.json();
 
-  // 🔁 Sync frontend state from backend
-  setTotalXP(updatedUser.totalXP);
-  setCurrentStreak(updatedUser.currentStreak);
-  setLongestStreak(updatedUser.longestStreak);
+  setTotalXP(user.totalXP);
+  setCurrentStreak(user.currentStreak);
+  setLongestStreak(user.longestStreak);
 }
+
 
 async function completeQuiz() {
   const xp = 100;
