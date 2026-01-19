@@ -122,16 +122,11 @@ export function XPProvider({ children }: { children: ReactNode }) {
     if (savedFreeze) setStreakFreeze(Number(savedFreeze));
   }, []);
 
-  // ---------------- SAVE ----------------
-  useEffect(() => {
+useEffect(() => {
+  if (totalXP !== undefined && totalXP !== null) {
     localStorage.setItem("totalXP", totalXP.toString());
-
-    const level = getLevelFromXP(totalXP);
-    if (level > prevLevelRef.current) {
-      setLevelUp(level);
-      prevLevelRef.current = level;
-    }
-  }, [totalXP]);
+  }
+}, [totalXP]);
 
   useEffect(() => {
     localStorage.setItem("achievements", JSON.stringify(unlocked));
@@ -214,20 +209,31 @@ export function XPProvider({ children }: { children: ReactNode }) {
   }, [activeAchievement]);
 
 async function completeLesson(lessonId: number) {
-  const res = await fetch("http://localhost:8080/api/progress/lesson", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      userId: 1,        // TEMP
-      lessonId: lessonId,
-    }),
-  });
+  try {
+    const res = await fetch("http://localhost:8080/api/progress/lesson", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lessonId }), // ensure your backend expects { lessonId }
+    });
 
-  const user = await res.json();
+    if (!res.ok) {
+      let bodyText = "";
+      try {
+        bodyText = await res.text();
+      } catch (e) {
+        bodyText = "<unreadable response body>";
+      }
+      return;
+    }
 
-  setTotalXP(user.totalXP);
-  setCurrentStreak(user.currentStreak);
-  setLongestStreak(user.longestStreak);
+    const user = await res.json();
+
+    setTotalXP(user.totalXP ?? 0);
+    setCurrentStreak(user.currentStreak ?? 0);
+    setLongestStreak(user.longestStreak ?? 0);
+  } catch (err) {
+    console.error("Error completing lesson", err);
+  }
 }
 
 
